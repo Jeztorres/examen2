@@ -6,7 +6,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background: #000;
     color: #fff;
     overflow: hidden;
     height: 100vh;
@@ -17,39 +17,42 @@ body {
     flex-direction: column;
     height: 100vh;
     width: 100%;
+    position: relative;
 }
 
 /* Header */
 header {
-    background: rgba(26, 26, 46, 0.95);
-    padding: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px 20px;
     text-align: center;
-    border-bottom: 2px solid #667eea;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     z-index: 10;
+    backdrop-filter: blur(10px);
 }
 
 h1 {
-    font-size: 1.8em;
-    margin-bottom: 10px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 1.5em;
+    margin-bottom: 5px;
+    color: #00d2ff;
 }
 
 #status {
-    font-size: 0.95em;
-    color: #aaa;
+    font-size: 0.9em;
+    color: #fff;
     margin: 5px 0;
 }
 
 /* Visor 3D */
 #viewer-container {
-    flex: 1;
-    position: relative;
-    background: #0f0f1e;
-    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
 }
 
 #viewer-container canvas {
@@ -58,107 +61,17 @@ h1 {
     height: 100%;
 }
 
-/* Controles normales */
-.controls {
-    background: rgba(26, 26, 46, 0.95);
-    padding: 20px;
-    border-top: 2px solid #667eea;
-    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.controls h3 {
-    font-size: 1.1em;
-    margin-bottom: 15px;
-    text-align: center;
-    color: #fff;
-}
-
-.control-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.control-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    font-size: 1em;
-    font-weight: 600;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    min-width: 120px;
-}
-
-.control-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-}
-
-.control-btn:active {
-    transform: translateY(0);
-}
-
-.control-btn.active {
-    background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-    box-shadow: 0 4px 20px rgba(0, 210, 255, 0.6);
-}
-
-/* Botón AR */
-.ar-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-    color: white;
-    border: none;
-    padding: 16px 32px;
-    font-size: 1.1em;
-    font-weight: bold;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 6px 25px rgba(0, 210, 255, 0.4);
-    transition: all 0.3s ease;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.ar-button:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(0, 210, 255, 0.6);
-}
-
-.ar-button:active:not(:disabled) {
-    transform: translateY(0);
-}
-
-.ar-button:disabled {
-    background: linear-gradient(135deg, #666 0%, #444 100%);
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.ar-icon {
-    font-size: 1.3em;
-}
-
 /* Controles AR */
 .ar-controls {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(26, 26, 46, 0.95);
+    background: rgba(0, 0, 0, 0.85);
     padding: 20px;
     z-index: 1000;
     border-top: 2px solid #00d2ff;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
 }
 
 .ar-controls.hidden {
@@ -178,78 +91,51 @@ h1 {
     gap: 10px;
     justify-content: center;
     flex-wrap: wrap;
-    margin-bottom: 15px;
 }
 
 .ar-control-btn {
     background: rgba(255, 255, 255, 0.95);
-    color: #1a1a2e;
+    color: #000;
     border: 2px solid #00d2ff;
-    padding: 12px 20px;
-    font-size: 0.95em;
-    font-weight: bold;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
-    min-width: 80px;
-}
-
-.ar-control-btn:active {
-    background: #00d2ff;
-    color: white;
-    transform: scale(0.95);
-}
-
-.exit-ar-btn {
-    display: block;
-    width: 100%;
-    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-    color: white;
-    border: none;
-    padding: 12px;
+    padding: 14px 24px;
     font-size: 1em;
     font-weight: bold;
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+    min-width: 90px;
 }
 
-.exit-ar-btn:active {
-    transform: scale(0.98);
+.ar-control-btn:active,
+.ar-control-btn.active {
+    background: #00d2ff;
+    color: white;
+    transform: scale(0.95);
+}
+
+.ar-control-btn:hover {
+    background: #00d2ff;
+    color: white;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
     h1 {
-        font-size: 1.4em;
-    }
-    
-    .control-btn {
-        padding: 10px 20px;
-        font-size: 0.9em;
-        min-width: 100px;
-    }
-    
-    .ar-button {
-        bottom: 15px;
-        right: 15px;
-        padding: 14px 28px;
-        font-size: 1em;
+        font-size: 1.3em;
     }
     
     .ar-control-btn {
-        padding: 10px 16px;
-        font-size: 0.85em;
-        min-width: 70px;
+        padding: 12px 20px;
+        font-size: 0.9em;
+        min-width: 75px;
     }
     
     header {
-        padding: 15px;
+        padding: 12px 15px;
     }
     
-    .controls {
+    .ar-controls {
         padding: 15px;
     }
 }
@@ -258,18 +144,4 @@ h1 {
 canvas {
     display: block;
     touch-action: none;
-}
-
-/* Animaciones */
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-}
-
-.ar-button:not(:disabled) {
-    animation: pulse 2s infinite;
 }

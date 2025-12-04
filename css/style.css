@@ -6,7 +6,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: #000;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     color: #fff;
     overflow: hidden;
     height: 100vh;
@@ -17,18 +17,15 @@ body {
     flex-direction: column;
     height: 100vh;
     width: 100%;
-    position: relative;
 }
 
 /* Header */
 header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(26, 26, 46, 0.95);
     padding: 15px 20px;
     text-align: center;
+    border-bottom: 2px solid #667eea;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     z-index: 10;
     backdrop-filter: blur(10px);
 }
@@ -36,112 +33,209 @@ header {
 h1 {
     font-size: 1.5em;
     margin-bottom: 5px;
-    color: #00d2ff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 #status {
     font-size: 0.9em;
-    color: #fff;
+    color: #aaa;
     margin: 5px 0;
 }
 
-/* Visor 3D */
-#viewer-container {
-    position: fixed;
-    top: 0;
-    left: 0;
+/* Model Viewer */
+model-viewer {
     width: 100%;
-    height: 100%;
-    z-index: 0;
+    height: calc(100vh - 250px);
+    background: #0f0f1e;
 }
 
-#viewer-container canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-/* Controles AR */
-.ar-controls {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.85);
-    padding: 20px;
-    z-index: 1000;
-    border-top: 2px solid #00d2ff;
-    backdrop-filter: blur(10px);
-}
-
-.ar-controls.hidden {
-    display: none;
-}
-
-.ar-instruction {
-    text-align: center;
-    font-size: 1em;
-    margin-bottom: 15px;
-    color: #00d2ff;
-    font-weight: 600;
-}
-
-.ar-buttons {
+/* Botón AR personalizado */
+.ar-button {
+    background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 6px 25px rgba(0, 210, 255, 0.4);
+    transition: all 0.3s ease;
     display: flex;
+    align-items: center;
     gap: 10px;
+    position: absolute;
+    bottom: 180px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+}
+
+.ar-button:hover {
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 210, 255, 0.6);
+}
+
+.ar-icon {
+    font-size: 1.3em;
+}
+
+/* Controles del modelo */
+.model-controls {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(26, 26, 46, 0.95);
+    padding: 15px 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    max-width: 90%;
+}
+
+.model-controls h3 {
+    font-size: 1em;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #fff;
+}
+
+.control-buttons {
+    display: flex;
+    gap: 8px;
     justify-content: center;
     flex-wrap: wrap;
 }
 
-.ar-control-btn {
-    background: rgba(255, 255, 255, 0.95);
-    color: #000;
-    border: 2px solid #00d2ff;
-    padding: 14px 24px;
-    font-size: 1em;
-    font-weight: bold;
-    border-radius: 25px;
+.control-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 0.9em;
+    font-weight: 600;
+    border-radius: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
-    min-width: 90px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    min-width: 100px;
 }
 
-.ar-control-btn:active,
-.ar-control-btn.active {
-    background: #00d2ff;
-    color: white;
-    transform: scale(0.95);
+.control-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
 }
 
-.ar-control-btn:hover {
-    background: #00d2ff;
-    color: white;
+.control-btn.active {
+    background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    box-shadow: 0 4px 20px rgba(0, 210, 255, 0.6);
+}
+
+/* Loading */
+.loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(0, 210, 255, 0.3);
+    border-top-color: #00d2ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Instrucciones */
+.instructions {
+    background: rgba(26, 26, 46, 0.95);
+    padding: 15px 20px;
+    border-top: 2px solid #667eea;
+    backdrop-filter: blur(10px);
+}
+
+.instructions h3 {
+    font-size: 1em;
+    margin-bottom: 10px;
+    color: #00d2ff;
+}
+
+.instructions ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+    font-size: 0.85em;
+}
+
+.instructions li {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #ccc;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
+    model-viewer {
+        height: calc(100vh - 200px);
+    }
+    
     h1 {
         font-size: 1.3em;
     }
     
-    .ar-control-btn {
-        padding: 12px 20px;
-        font-size: 0.9em;
-        min-width: 75px;
+    .ar-button {
+        bottom: 150px;
+        padding: 14px 28px;
+        font-size: 1em;
     }
     
-    header {
+    .control-btn {
+        padding: 8px 16px;
+        font-size: 0.85em;
+        min-width: 85px;
+    }
+    
+    .model-controls {
         padding: 12px 15px;
     }
     
-    .ar-controls {
-        padding: 15px;
+    .instructions ul {
+        grid-template-columns: 1fr;
+        font-size: 0.8em;
     }
 }
 
-/* Canvas de Three.js */
-canvas {
-    display: block;
-    touch-action: none;
+/* Animación del botón AR */
+@keyframes pulse {
+    0%, 100% {
+        transform: translateX(-50%) scale(1);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.05);
+    }
+}
+
+.ar-button {
+    animation: pulse 2s infinite;
 }

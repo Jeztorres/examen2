@@ -3,41 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Visor 3D - Modelos Animados</title>
+    <title>AR Visor 3D - Model Viewer</title>
     <link rel="stylesheet" href="css/style.css">
+    <!-- Model Viewer -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 </head>
 <body>
     <div id="container">
         <header>
-            <h1>AR Visor 3D</h1>
-            <p id="status">Iniciando...</p>
+            <h1>🎭 AR Visor 3D</h1>
+            <p id="status">Carga un modelo para comenzar</p>
         </header>
         
-        <!-- Canvas 3D -->
-        <div id="viewer-container"></div>
-        
-        <!-- Controles AR -->
-        <div id="ar-controls" class="ar-controls hidden">
-            <p class="ar-instruction">🎯 Mueve el dispositivo para escanear. Toca para colocar el modelo.</p>
-            <div class="ar-buttons">
-                <button id="ar-btn-pose-t" class="ar-control-btn">T</button>
-                <button id="ar-btn-animation-1" class="ar-control-btn">Mov 1</button>
-                <button id="ar-btn-animation-2" class="ar-control-btn active">Mov 2</button>
-                <button id="ar-btn-animation-3" class="ar-control-btn">Mov 3</button>
+        <!-- Model Viewer -->
+        <model-viewer
+            id="model-viewer"
+            src="./MOVIMIENTO2.fbx"
+            alt="Modelo 3D Animado"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            camera-controls
+            touch-action="pan-y"
+            auto-rotate
+            shadow-intensity="1"
+            exposure="1"
+            environment-image="neutral"
+            poster=""
+            loading="eager"
+            reveal="auto">
+            
+            <!-- Botón AR personalizado -->
+            <button slot="ar-button" id="ar-button" class="ar-button">
+                <span class="ar-icon">📱</span> Ver en tu espacio (AR)
+            </button>
+            
+            <!-- Controles de animación dentro del visor -->
+            <div class="model-controls">
+                <h3>🎬 Animaciones</h3>
+                <div class="control-buttons">
+                    <button class="control-btn" data-model="T.fbx">T (Pose)</button>
+                    <button class="control-btn" data-model="MOVIMIENTO1.fbx">Movimiento 1</button>
+                    <button class="control-btn active" data-model="MOVIMIENTO2.fbx">Movimiento 2</button>
+                    <button class="control-btn" data-model="MOVIMIENTO3.fbx">Movimiento 3</button>
+                </div>
             </div>
+            
+            <!-- Progreso de carga -->
+            <div id="lazy-load-poster" class="loading">
+                <div class="spinner"></div>
+                <p>Cargando modelo 3D...</p>
+            </div>
+        </model-viewer>
+        
+        <!-- Instrucciones -->
+        <div class="instructions">
+            <h3>📖 Instrucciones</h3>
+            <ul>
+                <li>🖱️ <strong>Arrastra</strong> para rotar el modelo</li>
+                <li>🔍 <strong>Pellizca</strong> para hacer zoom</li>
+                <li>📱 <strong>"Ver en tu espacio"</strong> para AR</li>
+                <li>🎬 <strong>Selecciona</strong> una animación</li>
+            </ul>
         </div>
     </div>
 
-    <!-- Three.js y librerías necesarias -->
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-            }
-        }
-    </script>
-    
-    <script type="module" src="js/app.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>

@@ -237,18 +237,36 @@ function setupViewerControls() {
 function setupARButton() {
     const arButton = document.getElementById('ar-button');
     
-    if ('xr' in navigator) {
-        navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
-            if (supported) {
-                arButton.addEventListener('click', startARSession);
-                arButton.disabled = false;
-            } else {
-                arButton.style.display = 'none';
-            }
-        });
-    } else {
+    if (!('xr' in navigator)) {
         arButton.style.display = 'none';
+        console.warn('WebXR no disponible en este navegador');
+        return;
     }
+    
+    navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+        if (supported) {
+            arButton.addEventListener('click', startARSession);
+            arButton.disabled = false;
+            
+            // Pre-solicitar permisos de cámara (opcional pero ayuda)
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        stream.getTracks().forEach(track => track.stop());
+                        console.log('Permisos de cámara pre-autorizados');
+                    })
+                    .catch(err => {
+                        console.log('Permisos de cámara pendientes:', err);
+                    });
+            }
+        } else {
+            arButton.style.display = 'none';
+            console.warn('AR no soportado en este dispositivo');
+        }
+    }).catch(error => {
+        console.error('Error verificando soporte AR:', error);
+        arButton.style.display = 'none';
+    });
     
     // Configurar controles AR
     setupARControls();
@@ -278,17 +296,33 @@ function setupARControls() {
 }
 
 async function startARSession() {
+    // Primero intentar obtener permisos de cámara
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: 'environment' } 
+        });
+        // Detener el stream inmediatamente, solo necesitamos el permiso
+        stream.getTracks().forEach(track => track.stop());
+    } catch (cameraError) {
+        console.error('Error de permisos de cámara:', cameraError);
+        alert('Por favor, permite el acceso a la cámara en la configuración de tu navegador.');
+        return;
+    }
+    
+    // Configuración de la sesión AR
     const sessionInit = {
         requiredFeatures: ['hit-test'],
-        optionalFeatures: ['dom-overlay'],
+        optionalFeatures: ['dom-overlay', 'camera-access'],
         domOverlay: { root: document.body }
     };
     
     try {
         const session = await navigator.xr.requestSession('immersive-ar', sessionInit);
-        await renderer.xr.setSession(session);
         
         session.addEventListener('end', onARSessionEnd);
+        
+        // Configurar el renderer con la sesión
+        await renderer.xr.setSession(session);
         
         isARMode = true;
         
@@ -315,14 +349,32 @@ async function startARSession() {
         if (mainModel) mainModel.visible = false;
         
         // Configurar interacción táctil
-        renderer.domElement.addEventListener('touchend', onARTouchEnd);
+        const touchHandler = onARTouchEnd.bind(this);
+        renderer.domElement.addEventListener('touchend', touchHandler);
+        
+        // Guardar referencia para limpiar después
+        session.touchHandler = touchHandler;
         
         // Cambiar a render loop XR
         renderer.setAnimationLoop(renderAR);
         
     } catch (error) {
-        console.error('Error al iniciar AR:', error);
-        alert('No se pudo iniciar AR. Asegúrate de permitir el acceso a la cámara.');
+        console.error('Error al iniciar sesión AR:', error);
+        
+        let errorMsg = 'No se pudo iniciar AR. ';
+        
+        if (error.name === 'NotAllowedError') {
+            errorMsg += 'Debes permitir el acceso a la cámara y sensores.';
+        } else if (error.name === 'NotSupportedError') {
+            errorMsg += 'Tu dispositivo no soporta WebXR AR.';
+        } else if (error.name === 'SecurityError') {
+            errorMsg += 'Necesitas usar HTTPS. Prueba con GitHub Pages o ngrok.';
+        } else {
+            errorMsg += error.message || 'Error desconocido.';
+        }
+        
+        alert(errorMsg);
+        console.error('Detalles del error:', error);
     }
 }
 
@@ -440,6 +492,12 @@ function onARSessionEnd() {
     document.getElementById('controls').style.display = 'block';
     document.getElementById('ar-button').style.display = 'block';
     document.getElementById('ar-controls').classList.add('hidden');
+    
+    // Limpiar event listeners
+    const session = renderer.xr.getSession();
+    if (session && session.touchHandler) {
+        renderer.domElement.removeEventListener('touchend', session.touchHandler);
+    }
     
     renderer.setAnimationLoop(null);
     animate();

@@ -8,6 +8,9 @@ let clock;
 let video, videoTexture;
 let isARMode = false;
 let modelPlaced = false;
+let reticle, scanEffect;
+let deviceOrientation = { alpha: 0, beta: 0, gamma: 0 };
+let touchStartPos = null;
 
 // Referencias a los modelos
 const baseModelPath = './MOVIMIENTO2.fbx'; // Modelo base con skin (Pose T)
@@ -58,6 +61,9 @@ function init() {
     directionalLight.castShadow = true;
     scene.add(directionalLight);
     
+    // Crear retículo para indicar dónde colocar el modelo
+    createReticle();
+    
     // Clock para animaciones
     clock = new THREE.Clock();
     
@@ -70,8 +76,61 @@ function init() {
     // Manejar resize
     window.addEventListener('resize', onWindowResize);
     
+    // Escuchar orientación del dispositivo
+    if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', handleOrientation);
+    }
+    
     // Iniciar render loop
     animate();
+}
+
+// Crear retículo para indicar dónde colocar el modelo
+function createReticle() {
+    // Anillo exterior
+    const ringGeometry = new THREE.RingGeometry(0.15, 0.2, 32);
+    const ringMaterial = new THREE.MeshBasicMaterial({ 
+        color: 0x00ff00,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.8
+    });
+    reticle = new THREE.Mesh(ringGeometry, ringMaterial);
+    reticle.rotation.x = -Math.PI / 2;
+    reticle.position.set(0, -0.5, -2);
+    
+    // Efecto de escaneo (anillos animados)
+    const scanGeometry = new THREE.RingGeometry(0.1, 0.25, 32);
+    const scanMaterial = new THREE.MeshBasicMaterial({ 
+        color: 0x00d2ff,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.5
+    });
+    scanEffect = new THREE.Mesh(scanGeometry, scanMaterial);
+    scanEffect.rotation.x = -Math.PI / 2;
+    scanEffect.position.copy(reticle.position);
+    
+    scene.add(reticle);
+    scene.add(scanEffect);
+}
+
+// Manejar orientación del dispositivo
+function handleOrientation(event) {
+    deviceOrientation.alpha = event.alpha || 0; // Z axis (0-360)
+    deviceOrientation.beta = event.beta || 0;   // X axis (-180 to 180)
+    deviceOrientation.gamma = event.gamma || 0; // Y axis (-90 to 90)
+    
+    // Ajustar la posición del retículo basado en la orientación
+    if (!modelPlaced && reticle) {
+        const tiltFactor = 0.01;
+        reticle.position.x = (deviceOrientation.gamma || 0) * tiltFactor;
+        reticle.position.y = -0.5 + (deviceOrientation.beta - 90) * tiltFactor;
+        
+        if (scanEffect) {
+            scanEffect.position.copy(reticle.position);
+        }
+    }
 }
 
 // Iniciar cámara AR
@@ -107,14 +166,17 @@ async function startARCamera() {
             plane.position.z = -1;
             scene.add(plane);
             
-            updateStatus('Cámara AR lista. Toca para colocar modelo.');
+            updateStatus('AR listo. Mueve el dispositivo para escanear y toca para colocar.');
             
             // Cargar modelo
             loadBaseModel();
             
             // Mostrar controles
             document.getElementById('ar-controls').classList.remove('hidden');
-            document.querySelector('header').style.display = 'none';
+            document.querySelector('header').style.display = 'block';
+            
+            // Animar efecto de escaneo
+            animateScanEffect();
         };
         
     } catch (error) {
@@ -126,17 +188,65 @@ async function startARCamera() {
     // Configurar interacción táctil
     renderer.domElement.addEventListener('click', onScreenClick);
     renderer.domElement.addEventListener('touchend', onScreenClick);
+    
+    // Gestos para mover el modelo después de colocarlo
+    renderer.domElement.addEventListener('touchstart', onTouchStart);
+    renderer.domElement.addEventListener('touchmove', onTouchMove);
+}
+
+// Animar efecto de escaneo
+function animateScanEffect() {
+    if (!modelPlaced && scanEffect) {
+        scanEffect.scale.x = 1 + Math.sin(Date.now() * 0.003) * 0.3;
+        scanEffect.scale.y = 1 + Math.sin(Date.now() * 0.003) * 0.3;
+        scanEffect.material.opacity = 0.3 + Math.sin(Date.now() * 0.005) * 0.2;
+    }
+}
+
+function onTouchStart(event) {
+    if (modelPlaced && event.touches.length === 1) {
+        touchStartPos = {
+            x: event.touches[0].clientX,
+            y: event.touches[0].clientY
+        };
+    }
+}
+
+function onTouchMove(event) {
+    if (modelPlaced && touchStartPos && event.touches.length === 1 && mainModel) {
+        const deltaX = event.touches[0].clientX - touchStartPos.x;
+        const deltaY = event.touches[0].clientY - touchStartPos.y;
+        
+        // Mover el modelo horizontalmente
+        mainModel.position.x += deltaX * 0.001;
+        mainModel.position.z += deltaY * 0.001;
+        
+        touchStartPos = {
+            x: event.touches[0].clientX,
+            y: event.touches[0].clientY
+        };
+    }
 }
 // Colocar modelo al hacer click/touch
 function onScreenClick(event) {
     if (!mainModel) return;
     
     if (!modelPlaced) {
-        // Primera vez: colocar modelo
-        mainModel.position.set(0, 0, -2);
+        // Primera vez: colocar modelo en la posición del retículo
+        mainModel.position.copy(reticle.position);
         mainModel.visible = true;
         modelPlaced = true;
-        updateStatus('Modelo colocado. Usa los botones para cambiar animaciones.');
+        
+        // Ocultar retículo y efecto de escaneo
+        reticle.visible = false;
+        scanEffect.visible = false;
+        
+        updateStatus('Modelo colocado. Arrastra para mover o usa botones para animar.');
+        
+        // Vibrar si está disponible
+        if (navigator.vibrate) {
+            navigator.vibrate(50);
+        }
     }
 }
 
@@ -275,6 +385,9 @@ function animate() {
     if (mixer) {
         mixer.update(delta);
     }
+    
+    // Animar efecto de escaneo
+    animateScanEffect();
     
     renderer.render(scene, camera);
 }

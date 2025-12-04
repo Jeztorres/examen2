@@ -4,12 +4,11 @@ const buttons = document.querySelectorAll('.control-btn');
 const statusText = document.getElementById('status');
 const loadingPoster = document.getElementById('lazy-load-poster');
 
-// Referencias a los modelos
+// Referencias a los modelos (cada uno tiene su propia skin y animación)
 const models = {
-    'T.glb': 'T (Pose)',
-    'MOVIMIENTO1.glb': 'Movimiento 1',
-    'MOVIMIENTO2.glb': 'Movimiento 2',
-    'MOVIMIENTO3.glb': 'Movimiento 3'
+    'models/Movimiento1.glb': 'Movimiento 1',
+    'models/movimiento2.glb': 'Movimiento 2',
+    'models/movimiento3.glb': 'Movimiento 3'
 };
 
 // Inicializar
@@ -49,6 +48,12 @@ function init() {
 function changeModel(modelPath) {
     updateStatus(`Cargando ${models[modelPath]}...`);
     loadingPoster.style.display = 'flex';
+    
+    // Detener cualquier animación previa antes de cambiar
+    modelViewer.pause();
+    modelViewer.currentTime = 0;
+    
+    // Cambiar el modelo
     modelViewer.src = `./${modelPath}`;
 }
 
@@ -58,9 +63,15 @@ function onModelLoaded() {
     const currentModel = modelViewer.src.split('/').pop();
     updateStatus(`${models[currentModel]} cargado. Listo para AR`);
     
-    // Activar animaciones si existen
+    // Reiniciar y reproducir - cada GLB tiene su propia skin y animación completa
+    modelViewer.currentTime = 0;
+    
     if (modelViewer.availableAnimations && modelViewer.availableAnimations.length > 0) {
+        console.log('Modelo:', currentModel, 'con animación:', modelViewer.availableAnimations[0]);
+        modelViewer.animationName = modelViewer.availableAnimations[0];
         modelViewer.play();
+    } else {
+        console.log('Modelo:', currentModel, '(sin animación - pose estática)');
     }
 }
 

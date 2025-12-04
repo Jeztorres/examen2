@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visor 3D con WebXR AR</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="container">
+        <header>
+            <h1>Visor de Modelos 3D</h1>
+            <p id="status">Cargando modelo...</p>
+        </header>
+        
+        <!-- Canvas 3D -->
+        <div id="viewer-container"></div>
+        
+        <!-- Controles de animaciones -->
+        <div id="controls" class="controls">
+            <h3>Selecciona una animación:</h3>
+            <div class="control-buttons">
+                <button id="btn-pose-t" class="control-btn">T (Pose)</button>
+                <button id="btn-animation-1" class="control-btn">Movimiento 1</button>
+                <button id="btn-animation-2" class="control-btn active">Movimiento 2 (Base)</button>
+                <button id="btn-animation-3" class="control-btn">Movimiento 3</button>
+            </div>
+        </div>
+        
+        <!-- Botón AR -->
+        <button id="ar-button" class="ar-button">
+            <span class="ar-icon">📱</span> Entrar a Modo AR
+        </button>
+        
+        <!-- Controles AR (se mostrarán solo en modo AR) -->
+        <div id="ar-controls" class="ar-controls hidden">
+            <p class="ar-instruction">Toca la pantalla para colocar el modelo</p>
+            <div class="ar-buttons">
+                <button id="ar-btn-pose-t" class="ar-control-btn">T</button>
+                <button id="ar-btn-animation-1" class="ar-control-btn">Mov 1</button>
+                <button id="ar-btn-animation-2" class="ar-control-btn">Mov 2</button>
+                <button id="ar-btn-animation-3" class="ar-control-btn">Mov 3</button>
+            </div>
+            <button id="exit-ar" class="exit-ar-btn">Salir de AR</button>
+        </div>
+    </div>
+
+    <!-- Three.js y librerías necesarias -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -6,10 +6,10 @@ const loadingPoster = document.getElementById('lazy-load-poster');
 
 // Referencias a los modelos
 const models = {
-    'T.fbx': 'T (Pose)',
-    'MOVIMIENTO1.fbx': 'Movimiento 1',
-    'MOVIMIENTO2.fbx': 'Movimiento 2',
-    'MOVIMIENTO3.fbx': 'Movimiento 3'
+    'T.glb': 'T (Pose)',
+    'MOVIMIENTO1.glb': 'Movimiento 1',
+    'MOVIMIENTO2.glb': 'Movimiento 2',
+    'MOVIMIENTO3.glb': 'Movimiento 3'
 };
 
 // Inicializar
@@ -68,7 +68,17 @@ function onModelLoaded() {
 function onModelError(event) {
     console.error('Error al cargar modelo:', event);
     loadingPoster.style.display = 'none';
-    updateStatus('❌ Error al cargar el modelo. Verifica que los archivos FBX existan.');
+    updateStatus('❌ Error: Los archivos deben ser .GLB. Convierte tus FBX a GLB primero.');
+    
+    // Mostrar mensaje de ayuda
+    alert('⚠️ Model Viewer requiere archivos GLB, no FBX.\n\n' +
+          '📝 Para convertir:\n' +
+          '1. Abre Blender (gratis)\n' +
+          '2. Importa tu FBX (File > Import > FBX)\n' +
+          '3. Exporta como GLB (File > Export > glTF 2.0)\n' +
+          '4. Reemplaza los archivos en la carpeta\n\n' +
+          'O usa un conversor online en:\n' +
+          'https://products.aspose.app/3d/conversion/fbx-to-glb');
 }
 
 // Progreso de carga

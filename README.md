@@ -1,180 +1,147 @@
 # Aplicación WebXR AR - Modelo 3D Animado
 
-Aplicación de Realidad Aumentada que permite visualizar modelos 3D con diferentes animaciones directamente en tu espacio físico usando la cámara del dispositivo.
+Aplicación de Realidad Aumentada que permite visualizar modelos 3D con diferentes animaciones usando **Model Viewer**.
 
-## 📋 Características
+## ⚠️ IMPORTANTE: Conversión de Archivos
 
-- ✅ Visualización AR de modelos 3D en tu espacio real
-- ✅ Cambio dinámico entre diferentes animaciones
-- ✅ Interfaz inmersiva con botones flotantes
-- ✅ Detección de superficies para colocar modelos
-- ✅ Iluminación realista y sombras
-- ✅ Diseño responsive para móviles
+Esta aplicación requiere archivos **GLB** (no FBX). Debes convertir tus archivos FBX a GLB.
 
-## 🗂️ Estructura del Proyecto
+### 🔄 Opción 1: Conversor Online (Más Rápido)
+
+1. Ve a: https://products.aspose.app/3d/conversion/fbx-to-glb
+2. Sube tu archivo FBX (T.fbx, MOVIMIENTO1.fbx, etc.)
+3. Descarga el archivo GLB convertido
+4. Colócalo en la raíz del proyecto
+
+### 🔄 Opción 2: Blender (Recomendado para Calidad)
+
+1. **Descarga Blender** (gratis): https://www.blender.org/download/
+2. **Abre Blender** y cierra la escena por defecto
+3. **Importar FBX**:
+   - File → Import → FBX (.fbx)
+   - Selecciona tu archivo (T.fbx, MOVIMIENTO1.fbx, etc.)
+4. **Exportar como GLB**:
+   - File → Export → glTF 2.0 (.glb/.gltf)
+   - Formato: `GLB` (binario)
+   - Incluir: ☑ Animaciones
+   - Guardar como: `T.glb`, `MOVIMIENTO1.glb`, etc.
+5. **Coloca los archivos** en la raíz del proyecto
+
+### 📁 Estructura Requerida
 
 ```
 EXAMENBIEN/
-├── index.html          # Página principal
+├── index.html
 ├── css/
-│   └── style.css      # Estilos de la aplicación
+│   └── style.css
 ├── js/
-│   └── app.js         # Lógica de AR y Three.js
-└── models/            # 📁 COLOCA TUS MODELOS AQUÍ
-    ├── modell-final.fbx    (Pose T - modelo base)
-    ├── movimiento2.fbx     (Animación 2)
-    └── movimiento3.fbx     (Animación 3)
+│   └── app.js
+├── T.glb                  ← Convertir T.fbx a GLB
+├── MOVIMIENTO1.glb        ← Convertir MOVIMIENTO1.fbx a GLB
+├── MOVIMIENTO2.glb        ← Convertir MOVIMIENTO2.fbx a GLB
+└── MOVIMIENTO3.glb        ← Convertir MOVIMIENTO3.fbx a GLB
 ```
 
-## 📦 Requisitos
+## 📋 Características
 
-### Dispositivo:
-- **Smartphone Android** con soporte ARCore
-- **iOS 12+** (Safari con soporte WebXR)
-
-### Navegador:
-- **Chrome** 89+ (Android)
-- **Edge** (Android)
-- **Safari** (iOS con WebXR Viewer)
-
-### Conexión:
-- **HTTPS** (obligatorio para WebXR) o
-- **localhost** (para desarrollo)
+- ✅ Visualización 3D interactiva en el navegador
+- ✅ AR nativo para iOS (Quick Look) y Android (Scene Viewer)
+- ✅ Controles táctiles: rotar, zoom, mover
+- ✅ Cambio dinámico entre modelos/animaciones
+- ✅ Colocar modelos en tu espacio real
+- ✅ Escalar y posicionar libremente en AR
+- ✅ Iluminación realista y sombras
 
 ## 🚀 Instalación
 
-### 1. Coloca tus modelos FBX
+### 1. Convierte tus archivos FBX a GLB (ver arriba)
 
-Copia los archivos `.fbx` en la carpeta `models/`:
-- `modell-final.fbx` → Modelo con pose T (base con skin)
-- `movimiento2.fbx` → Primera animación
-- `movimiento3.fbx` → Segunda animación
+### 2. Coloca los archivos GLB en la raíz del proyecto
 
-### 2. Servidor local
+### 3. Inicia un servidor local
 
-Debes servir la aplicación mediante HTTPS. Opciones:
-
-#### Opción A: Python (Simple)
 ```bash
 # Python 3
 python -m http.server 8000
-```
-Luego visita: `http://localhost:8000`
 
-#### Opción B: Node.js con http-server
-```bash
-npm install -g http-server
-http-server -p 8000
+# O con Node.js
+npx http-server -p 8000
 ```
 
-#### Opción C: VS Code con Live Server
-1. Instala la extensión "Live Server"
-2. Click derecho en `index.html` → "Open with Live Server"
+### 4. Abre en tu navegador
 
-### 3. Para usar en tu teléfono (HTTPS)
+- Escritorio: `http://localhost:8000`
+- Móvil: Usa la IP local o GitHub Pages
 
-Para usar AR necesitas HTTPS. Opciones:
+## 📱 Uso en AR
 
-#### Opción A: ngrok (Recomendado)
-```bash
-# Descarga ngrok desde ngrok.com
-ngrok http 8000
-```
-Copia la URL HTTPS que te proporciona y ábrela en tu móvil.
-
-#### Opción B: GitHub Pages
-1. Sube el proyecto a GitHub
-2. Activa GitHub Pages en Settings
-3. Accede desde tu móvil a la URL de GitHub Pages
-
-## 📱 Uso
-
-1. **Abre la aplicación** en tu dispositivo móvil
-2. **Presiona "Iniciar AR"** y otorga permisos de cámara
-3. **Apunta al suelo** y verás un círculo verde (retículo)
-4. **Toca la pantalla** para colocar el modelo
-5. **Usa los botones** en la parte inferior para cambiar entre:
-   - **Pose T**: Modelo base en posición T
-   - **Movimiento 2**: Primera animación
-   - **Movimiento 3**: Segunda animación
+1. **Abre la aplicación** en tu móvil (iOS o Android)
+2. Presiona **"Ver en tu espacio (AR)"**
+3. **Mueve el dispositivo** para escanear superficies
+4. **Toca** para colocar el modelo
+5. **Pellizca** para escalar
+6. **Arrastra** para mover
+7. **Rota con dos dedos** para girar
 
 ## 🎮 Controles
 
-- **Tocar pantalla**: Colocar modelo (antes de colocarlo)
-- **Botón "Pose T"**: Cambiar a modelo base
-- **Botón "Movimiento 2"**: Activar animación 2
-- **Botón "Movimiento 3"**: Activar animación 3
+### En el navegador:
+- 🖱️ **Arrastra**: Rotar el modelo
+- 🔍 **Pellizca**: Hacer zoom
+- 🎬 **Botones**: Cambiar entre modelos
 
-## ⚙️ Configuración
+### En modo AR:
+- 📱 **Mueve el móvil**: Escanear superficies
+- 👆 **Toca**: Colocar modelo
+- 🤏 **Pellizca**: Escalar
+- 👆 **Arrastra**: Mover posición
+- 🔄 **Dos dedos**: Rotar
 
-### Ajustar escala del modelo
-En `js/app.js`, línea ~146:
-```javascript
-mainModel.scale.set(0.5, 0.5, 0.5); // Cambia los valores
-```
+## 💡 Consejos para AR
 
-### Cambiar posición inicial
-En `js/app.js`, modifica la función `placeModel()`.
-
-### Añadir más animaciones
-1. Agrega el archivo FBX a la carpeta `models/`
-2. Añade la ruta en el objeto `models` (línea ~12)
-3. Crea un nuevo botón en `index.html`
-4. Añade el event listener en `setupEventListeners()`
+- **Buena iluminación**: AR funciona mejor con luz natural
+- **Superficies planas**: Mesas, suelo, escritorios
+- **Mueve lentamente**: Da tiempo al dispositivo para escanear
+- **Distancia**: 1-3 metros del modelo para mejor visualización
 
 ## 🔧 Solución de Problemas
 
-### "AR no soportado"
-- Verifica que tu dispositivo tenga ARCore (Android) o ARKit (iOS)
-- Usa un navegador compatible (Chrome/Edge en Android)
+### "Error al cargar modelo"
+- ✅ Verifica que los archivos sean .GLB (no .FBX)
+- ✅ Archivos deben estar en la raíz del proyecto
+- ✅ Nombres exactos: `T.glb`, `MOVIMIENTO1.glb`, etc.
 
-### "WebXR no disponible"
-- Asegúrate de usar HTTPS o localhost
-- Actualiza tu navegador
+### AR no funciona
+- ✅ iOS: Requiere iOS 12+ y Safari
+- ✅ Android: Requiere ARCore instalado
+- ✅ Usa HTTPS o localhost
+- ✅ Permisos de cámara activados
 
-### El modelo no aparece
-- Verifica que los archivos `.fbx` estén en `models/`
-- Revisa la consola del navegador (F12) para errores
-- Asegúrate de que los nombres coincidan exactamente
+### Modelos muy grandes/pequeños
+- Ajusta la escala al exportar desde Blender
+- En AR, usa pellizco para escalar
 
-### Los modelos se ven muy grandes/pequeños
-- Ajusta el valor de `scale.set()` en `app.js`
+## 📚 Tecnologías
 
-### Las animaciones no se reproducen
-- Verifica que los archivos FBX contengan animaciones
-- Revisa la consola para errores de carga
-- Los archivos FBX de animación deben tener el esqueleto compatible con el modelo base
+- **Model Viewer** - Google's 3D model viewer
+- **WebXR API** - Realidad aumentada web
+- **GLB/glTF 2.0** - Formato 3D optimizado para web
+- **Quick Look** (iOS) - AR nativo de Apple
+- **Scene Viewer** (Android) - AR nativo de Google
 
-## 📚 Tecnologías Utilizadas
+## 🌐 Desplegar en GitHub Pages
 
-- **Three.js** - Motor 3D
-- **WebXR API** - Realidad aumentada
-- **FBXLoader** - Carga de modelos FBX 3D
-- **ARButton** - Interfaz de AR
+1. Sube el proyecto a GitHub
+2. Settings → Pages → Source: main branch
+3. Accede a: `https://[usuario].github.io/[repo]`
+4. Funcionará con HTTPS automáticamente
 
-## 📄 Notas Importantes
+## 📄 Notas Técnicas
 
-- Los modelos FBX deben estar optimizados (< 10MB recomendado)
-- Las animaciones deben estar embebidas en los archivos FBX
-- El modelo base (`modell-final.fbx`) debe tener la skin/textura (Pose T)
-- Los archivos de animación (`movimiento2.fbx`, `movimiento3.fbx`) son solo el esqueleto
-- Los esqueletos de las animaciones deben ser compatibles con el modelo base
-
-## 🎨 Personalización
-
-Puedes modificar los colores y estilos en `css/style.css`:
-- Gradientes de fondo
-- Colores de botones
-- Posición de controles
-- Animaciones CSS
-
-## 📞 Soporte
-
-Si encuentras problemas:
-1. Revisa la consola del navegador (F12)
-2. Verifica los requisitos del dispositivo
-3. Asegúrate de usar HTTPS
-4. Comprueba que los archivos FBX son válidos y compatibles
+- **GLB vs FBX**: GLB es más ligero y optimizado para web
+- **Animaciones**: Se reproducen automáticamente si están embebidas
+- **Compatibilidad**: Chrome, Safari, Edge (últimas versiones)
+- **Tamaño**: Se recomienda < 5MB por modelo para carga rápida
 
 ---
 

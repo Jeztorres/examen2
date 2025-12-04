@@ -18,7 +18,7 @@
         <!-- Model Viewer -->
         <model-viewer
             id="model-viewer"
-            src="./MOVIMIENTO2.fbx"
+            src="./MOVIMIENTO2.glb"
             alt="Modelo 3D Animado"
             ar
             ar-modes="webxr scene-viewer quick-look"
@@ -30,7 +30,9 @@
             environment-image="neutral"
             poster=""
             loading="eager"
-            reveal="auto">
+            reveal="auto"
+            animation-name="*"
+            autoplay>
             
             <!-- Botón AR personalizado -->
             <button slot="ar-button" id="ar-button" class="ar-button">
@@ -39,12 +41,12 @@
             
             <!-- Controles de animación dentro del visor -->
             <div class="model-controls">
-                <h3>🎬 Animaciones</h3>
+                <h3>🎬 Selecciona un Modelo</h3>
                 <div class="control-buttons">
-                    <button class="control-btn" data-model="T.fbx">T (Pose)</button>
-                    <button class="control-btn" data-model="MOVIMIENTO1.fbx">Movimiento 1</button>
-                    <button class="control-btn active" data-model="MOVIMIENTO2.fbx">Movimiento 2</button>
-                    <button class="control-btn" data-model="MOVIMIENTO3.fbx">Movimiento 3</button>
+                    <button class="control-btn" data-model="T.glb">T (Pose)</button>
+                    <button class="control-btn" data-model="MOVIMIENTO1.glb">Movimiento 1</button>
+                    <button class="control-btn active" data-model="MOVIMIENTO2.glb">Movimiento 2</button>
+                    <button class="control-btn" data-model="MOVIMIENTO3.glb">Movimiento 3</button>
                 </div>
             </div>
             
